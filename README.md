@@ -20,10 +20,6 @@ Sitio web personal donde presento quién soy, mis habilidades y una selección d
 
 La sección de proyectos enlaza a otros repositorios de este perfil:
 
-- **Blackjack en Java** ([proyecto-blackjack](https://github.com/AlvaroAlme/proyecto-blackjack)): juego de cartas con diseño orientado a objetos.
-- **Invitación de boda** ([inviitaciones-boda-AnayAlvaro](https://github.com/AlvaroAlme/inviitaciones-boda-AnayAlvaro)): invitación interactiva hecha con React y Supabase.
-- **Formulario de boda** ([formulario-boda](https://github.com/AlvaroAlme/formulario-boda)): formulario de confirmación de asistencia con base de datos SQL.
-
 ## Cómo verlo
 
 Al ser HTML/CSS/JS puro, basta con abrir `index.html` en el navegador, o servir la carpeta con cualquier servidor estático.
