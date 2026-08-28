@@ -39,6 +39,48 @@ function generarId(){
     return Math.max(...idsExistente) + 1;
 }
 
+function escaparCampoCSV(texto){
+    const textoString = String (texto);
+    if(textoString.includes(";") || textoString.includes(`"`)){
+        return `"${textoString.replace(/"/g, '""')}"`;
+    }
+    return textoString;
+}
+
+function generarCSV(){
+    const cabecera = "Fecha;Nombre;Categoria;Cantidad";
+    const filas = gastos.map((gasto) => {
+        return [
+            escaparCampoCSV(gasto.fecha),
+            escaparCampoCSV(gasto.nombre),
+            escaparCampoCSV(gasto.categoria),
+            gasto.cantidad.toFixed(2),
+        ].join(";");
+    });
+    return [cabecera, ...filas].join("\n");
+}
+
+function descargarCSV(){
+    if(gastos.length === 0){
+        mensajeError.textContent = "No hay gastos que exportar.";
+        return;
+    }
+
+    const contenidoCSV = generarCSV();
+    const blob = new Blob (["\uFEFF" + contenidoCSV], {type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "gastos.csv";
+    enlace.click();
+
+    URL.revokeObjectURL(url);
+}
+
+const exportBtn = document.getElementById("exportar-btn");
+exportBtn.addEventListener("click", descargarCSV);
+
 
 
 
