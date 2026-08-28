@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Control de gastos</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+    <h1>Finz</h1>
+    <form>
+        <input type="text" inputmode="decimal" id="cantidad" placeholder="0.00 €"/>
+        <input type="text" id="nombre-gastos" placeholder="Ej: Cena"/>
+        <select name="familia-gastos" id="categoria">
+            <option value="" selected disabled>Selcciona una opcion</option>
+            <option value="Compra">Supermercado</option>
+            <option value="Ocio">Ocio</option>
+            <option value="Salud">Salud</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Deudas">Deudas</option>
+            <option value="Mascotas">Mascotas</option>
+            <option value="Niños">Niños</option>
+        </select>
+        <button type="submit">Añadir gasto</button>
+    </form>
+    <p id="mensaje-error"></p>
+    <ul id="lista-gastos">
+
+    </ul>
+    <script src="script.js"></script>
+    </body>
+</html>
