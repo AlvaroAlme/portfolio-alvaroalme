@@ -66,6 +66,11 @@ font-size: 2rem;
 cursor: default;
 }
 
+#logo-img img {
+height: 200px;
+width: auto;
+}
+
 /* HAMBURGER MENU */
 
 #hamburger-nav {
