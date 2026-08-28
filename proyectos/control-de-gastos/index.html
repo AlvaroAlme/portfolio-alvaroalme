@@ -11,28 +11,28 @@
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-    <h1>Finz</h1>
-    <form>
-        <input type="text" inputmode="decimal" id="cantidad" placeholder="0.00 €"/>
-        <input type="text" id="nombre-gastos" placeholder="Ej: Cena"/>
-        <select name="familia-gastos" id="categoria">
-            <option value="" selected disabled>Selcciona una opcion</option>
-            <option value="Compra">Supermercado</option>
-            <option value="Ocio">Ocio</option>
-            <option value="Salud">Salud</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Deudas">Deudas</option>
-            <option value="Mascotas">Mascotas</option>
-            <option value="Niños">Niños</option>
-        </select>
-        <button type="submit">Añadir gasto</button>
-    </form>
+        <div class="app">
+            <h1>Finz</h1>
+            <form class="gasto-form">
+                <input type="text" inputmode="decimal" id="cantidad" placeholder="0.00 €"/>
+                <input type="text" id="nombre-gastos" placeholder="Ej: Cena"/>
+                <select name="categoria-gastos" id="categoria">
+                    <option value="" selected disabled>Selcciona una opcion</option>
+                    <option value="Compra">Supermercado</option>
+                    <option value="Ocio">Ocio</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Deudas">Deudas</option>
+                    <option value="Mascotas">Mascotas</option>
+                    <option value="Niños">Niños</option>
+                </select>
+                <button type="submit" class="btn-primario">Añadir gasto</button>
+            </form>
 
-    <button id="exportar-btn" type="button">Descargar CSV</button>
-    <p id="mensaje-error"></p>
-    <ul id="lista-gastos">
-
-    </ul>
-    <script src="script.js"></script>
+            <button id="exportar-btn" type="button" class="btn-secundario">Descargar CSV</button>
+            <p id="mensaje-error"></p>
+            <ul id="lista-gastos"></ul>
+        </div>
+        <script src="script.js"></script>
     </body>
 </html>

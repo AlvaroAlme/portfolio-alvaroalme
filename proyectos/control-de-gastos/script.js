@@ -26,7 +26,33 @@ function renderGastos(){
     listaGastos.innerHTML = "";
     for(const gasto of gastos){
         const item = document.createElement("li");
-        item.textContent = `${gasto.fecha} — ${gasto.nombre} — ${gasto.cantidad.toFixed(2)} € (${gasto.categoria})`;
+        item.className = "gasto-item";
+
+        const info = document.createElement("div");
+        info.className = "gasto-info";
+
+        const nombre = document.createElement("span");
+        nombre.className = "gasto-nombre";
+        nombre.textContent = gasto.nombre;
+
+        const fecha = document.createElement("span");
+        fecha.className = "gasto-fecha";
+        fecha.textContent = gasto.fecha;
+
+        info.appendChild(nombre);
+        info.appendChild(fecha);
+
+        const categoria = document.createElement("span");
+        categoria.className = "gasto-categoria";
+        categoria.textContent = gasto.categoria;
+
+        const cantidad = document.createElement("span");
+        cantidad.className = "gasto-cantidad";
+        cantidad.textContent = `-${gasto.cantidad.toFixed(2)} €`;
+
+        item.appendChild(info);
+        item.appendChild(categoria);
+        item.appendChild(cantidad);
         listaGastos.appendChild(item);
     }
 }

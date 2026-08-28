@@ -1,0 +1,280 @@
+/* ============================================================
+   FINZ — Control de Gastos
+   Dirección visual: "ledger" — el libro de cuentas de toda la vida.
+   Papel verde pálido, tinta oscura, líneas de apunte, cifras en
+   columna. El rojo de los gastos viene literalmente de "números
+   rojos": así se anotaban las deudas en la contabilidad en papel.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+@font-face {
+  font-family: "Brolian";
+  src: url("assets/Brolian-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --ledger-void: #e9eae2;
+  --ledger-page: #f7f7f1;
+  --ink: #22262b;
+  --ink-soft: #6b7268;
+  --rule: #c9cdbe;
+  --debit: #7a2e22;
+  --brand: #3b5d42;
+
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", "Courier New", monospace;
+  --font-wordmark: "Brolian", "Segoe UI", sans-serif;
+
+  --radius-page: 1.25rem;
+  --radius-field: 0.4rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gasto-item {
+    animation: aparecer 220ms ease-out;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--ledger-void);
+  color: var(--ink);
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1.25rem;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- La hoja del ledger ---------- */
+
+.app {
+  width: 100%;
+  max-width: 400px;
+  background: var(--ledger-page);
+  border-radius: var(--radius-page);
+  padding: 2.25rem 1.75rem 1.75rem;
+  border: 1px solid var(--rule);
+  height: fit-content;
+}
+
+.app-eyebrow {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.35rem;
+}
+
+h1 {
+  font-family: var(--font-wordmark);
+  font-weight: 900;
+  font-size: 4rem;
+  color: var(--brand);
+  margin-bottom: 1.75rem;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+/* ---------- Formulario: campos subrayados, como rellenar
+   una línea del libro, en vez de cajas cerradas ---------- */
+
+.gasto-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.gasto-form input,
+.gasto-form select {
+  width: 100%;
+  padding: 0.5rem 0.1rem 0.6rem;
+  border: none;
+  border-bottom: 1.5px solid var(--rule);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  transition: border-color 150ms ease;
+}
+
+.gasto-form input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+.gasto-form input:focus,
+.gasto-form select:focus {
+  outline: none;
+  border-bottom-color: var(--brand);
+}
+
+.gasto-form input:focus-visible,
+.gasto-form select:focus-visible,
+.btn-primario:focus-visible,
+.btn-secundario:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+#cantidad {
+  font-family: var(--font-data);
+  font-size: 1.15rem;
+}
+
+.gasto-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236B7268' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.15rem center;
+  background-size: 0.7rem;
+  padding-right: 1.25rem;
+}
+
+/* ---------- Botones: uno con peso (acción principal),
+   uno de trazo fino (acción secundaria) ---------- */
+
+.btn-primario,
+.btn-secundario {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-field);
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.btn-primario {
+  background: var(--brand);
+  color: var(--ledger-page);
+}
+
+.btn-primario:hover {
+  background: #2e4a35;
+}
+
+.btn-secundario {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  margin-bottom: 1.5rem;
+}
+
+.btn-secundario:hover {
+  border-color: var(--ink-soft);
+  color: var(--ink);
+}
+
+/* ---------- Mensajes de error ---------- */
+
+#mensaje-error {
+  color: var(--debit);
+  font-size: 0.82rem;
+  min-height: 1.1rem;
+  margin-top: -0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+/* ---------- El libro de apuntes: una línea por gasto,
+   separadas por una regla fina — la propia línea ES el dato,
+   no una decoración ---------- */
+
+#lista-gastos {
+  list-style: none;
+}
+
+.gasto-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.gasto-item:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.gasto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.gasto-nombre {
+  font-size: 0.95rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gasto-fecha {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.gasto-categoria {
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand);
+  white-space: nowrap;
+  align-self: center;
+}
+
+.gasto-cantidad {
+  font-family: var(--font-data);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--debit);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Móvil: la tarjeta pasa a ocupar toda la anchura,
+   sin el margen de "postal" que tiene en escritorio ---------- */
+
+@media (max-width: 480px) {
+  body {
+    padding: 1.5rem 0.9rem;
+  }
+
+  .app {
+    padding: 1.75rem 1.25rem 1.25rem;
+  }
+}
