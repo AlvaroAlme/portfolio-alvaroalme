@@ -301,40 +301,34 @@ h1 {
   transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
 }
 
+/* El input real se oculta por completo (tamaño cero, invisible) y
+   solo sirve para el estado (marcado/no marcado) y la accesibilidad.
+   El círculo que se ve es "::before" del <label>, un elemento normal
+   de toda la vida — así no depende de cómo cada navegador dibuje el
+   radio nativo, que es justo lo que causaba el solape en iOS. */
+
 .tipo-selector input {
-  appearance: none;
-  -webkit-appearance: none;
+  position: absolute;
+  width: 0;
+  height: 0;
   margin: 0;
+  opacity: 0;
+}
+
+.tipo-selector label::before {
+  content: "";
   flex-shrink: 0;
   width: 1rem;
   height: 1rem;
-  aspect-ratio: 1;
+  border-radius: 50%;
   border: 1.5px solid var(--rule);
-  border-radius: 50%;
-  background: none;
-  display: grid;
-  place-content: center;
-  cursor: pointer;
-  transition: border-color 150ms ease;
+  box-shadow: inset 0 0 0 0.2rem transparent;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.tipo-selector input::before {
-  content: "";
-  width: 0.5rem;
-  height: 0.5rem;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--brand);
-  transform: scale(0);
-  transition: transform 120ms ease;
-}
-
-.tipo-selector input:checked {
+.tipo-selector label:has(input:checked)::before {
   border-color: var(--brand);
-}
-
-.tipo-selector input:checked::before {
-  transform: scale(1);
+  box-shadow: inset 0 0 0 0.2rem var(--brand);
 }
 
 .tipo-selector label:has(input:checked) {
