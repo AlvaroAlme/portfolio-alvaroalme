@@ -11,28 +11,75 @@
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <div class="app">
+       <div class="app">
             <h1>Finz</h1>
+
+            <nav class="tabs">
+                <button type="button" class="tab-btn" data-tab="movimientos">Movimientos</button>
+                <button type="button" class="tab-btn" data-tab="ajustes">Ajustes</button>
+                <button type="button" class="tab-btn" data-tab="analisis"> Analisis</button>
+            </nav>
+
+        <section id="movimientos" class="tab-panel activo">
             <form class="gasto-form">
                 <input type="text" inputmode="decimal" id="cantidad" placeholder="0.00 €"/>
                 <input type="text" id="nombre-gastos" placeholder="Ej: Cena"/>
                 <select name="categoria-gastos" id="categoria">
-                    <option value="" selected disabled>Selcciona una opcion</option>
-                    <option value="Compra">Supermercado</option>
-                    <option value="Ocio">Ocio</option>
-                    <option value="Salud">Salud</option>
-                    <option value="Transporte">Transporte</option>
-                    <option value="Deudas">Deudas</option>
-                    <option value="Mascotas">Mascotas</option>
-                    <option value="Niños">Niños</option>
+
                 </select>
+                <div class="tipo-selector">
+                    <label>
+                        <input type="radio" name="tipo" value="gasto" checked/> Gasto
+                    </label>
+                    <label>
+                        <input type="radio" name="tipo" value="ingreso" /> Ingreso
+                    </label>
+                </div>
                 <button type="submit" class="btn-primario">Añadir gasto</button>
             </form>
 
             <button id="exportar-btn" type="button" class="btn-secundario">Descargar CSV</button>
             <p id="mensaje-error"></p>
             <ul id="lista-gastos"></ul>
-        </div>
-        <script src="script.js"></script>
+        </section>
+
+        <section id="ajustes" class="tab-panel">
+            <h2>Ajustes</h2>
+            <form id="categoria-form">
+                <input type="text" id="nueva-categoria" placeholder="Nueva categoria"/>
+                <button type="submit">Añadir categoria</button>
+            </form>
+            <ul id="lista-categorias"></ul>
+        </section>
+        <section id="analisis" class="tab-panel">
+            <h2>Análisis</h2>
+            <div class="resumen-totales">
+                <div>
+                    <span class="resumen-label">Ingresos</span>
+                    <span id="total-ingresos" class="resumen-valor"></span>
+                </div>
+                <div>
+                    <span class="resumen-label">Gastos</span>
+                    <span id="total-gastos" class="resumen-valor"></span>
+                </div>
+                <div>
+                    <span class="resumen-label">Balance</span>
+                    <span id="balance" class="resumen-valor"></span>
+                </div>
+            </div>
+            <p id="categoria-destacada"></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-categorias-cuerpo"></tbody>
+            </table>
+        </section>
+    </div>
+    <script src="script.js"></script>
     </body>
 </html>

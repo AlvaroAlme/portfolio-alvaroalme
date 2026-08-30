@@ -100,6 +100,126 @@ h1 {
   text-align: center;
 }
 
+/* ---------- Pestañas: como el índice de un libro de cuentas,
+   una raya fina y el apartado activo marcado por debajo ---------- */
+
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0 0 0.6rem;
+  margin-bottom: -1px;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.tab-btn:hover {
+  color: var(--ink);
+}
+
+.tab-btn.activo {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+
+.tab-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.activo {
+  display: block;
+}
+
+#ajustes h2,
+#analisis h2 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin-bottom: 1.1rem;
+}
+
+#categoria-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+#categoria-form input {
+  flex: 1;
+  padding: 0.5rem 0.1rem 0.6rem;
+  border: none;
+  border-bottom: 1.5px solid var(--rule);
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  transition: border-color 150ms ease;
+}
+
+#categoria-form input:focus {
+  outline: none;
+  border-bottom-color: var(--brand);
+}
+
+#categoria-form input:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+#categoria-form button {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-field);
+  border: none;
+  background: var(--brand);
+  color: var(--ledger-page);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 150ms ease;
+}
+
+#categoria-form button:hover {
+  background: #2e4a35;
+}
+
+#lista-categorias {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#lista-categorias li {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--brand);
+  background: var(--ledger-void);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+}
+
 /* ---------- Formulario: campos subrayados, como rellenar
    una línea del libro, en vez de cajas cerradas ---------- */
 
@@ -156,6 +276,38 @@ h1 {
   background-position: right 0.15rem center;
   background-size: 0.7rem;
   padding-right: 1.25rem;
+}
+
+.tipo-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: -0.3rem;
+}
+
+.tipo-selector label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.tipo-selector input {
+  accent-color: var(--brand);
+}
+
+.tipo-selector label:has(input:checked) {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--ledger-void);
 }
 
 /* ---------- Botones: uno con peso (acción principal),
@@ -263,6 +415,117 @@ h1 {
   font-size: 0.95rem;
   color: var(--debit);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.gasto-cantidad--ingreso {
+  color: var(--brand);
+}
+
+/* ---------- Análisis: el resumen arriba, como el encabezado
+   de un extracto — tres cifras separadas por una raya vertical,
+   igual que columnas en el papel. El destacado de categoría
+   vuelve al cuerpo (serif), porque es una lectura, no un dato
+   tabular. La tabla usa las mismas reglas horizontales que la
+   lista de movimientos: es el mismo libro, otra vista. ---------- */
+
+.resumen-totales {
+  display: flex;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 1.1rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.resumen-totales > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.resumen-totales > div + div {
+  border-left: 1px solid var(--rule);
+}
+
+.resumen-label {
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.resumen-valor {
+  font-family: var(--font-data);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+#total-ingresos {
+  color: var(--brand);
+}
+
+#total-gastos {
+  color: var(--debit);
+}
+
+#balance {
+  font-weight: 700;
+}
+
+#categoria-destacada {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--ledger-void);
+  border-left: 3px solid var(--brand);
+  border-radius: 0 var(--radius-field) var(--radius-field) 0;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+#analisis table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#analisis thead th {
+  font-family: var(--font-data);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: left;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+#analisis thead th:last-child {
+  text-align: right;
+}
+
+#analisis tbody td {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+}
+
+#analisis tbody tr:last-child td {
+  border-bottom: 1px solid var(--rule);
+}
+
+#analisis tbody td:last-child {
+  font-family: var(--font-data);
+  font-weight: 600;
+  color: var(--debit);
+  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
