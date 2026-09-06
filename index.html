@@ -4,13 +4,19 @@
 <meta charset="UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
+<meta name="description" content="Alvaro Almecija — Desarrollador Web. Proyectos, experiencia y contacto." />
 <title>Alvaro Almecija - Portfolio</title>
+<link rel="icon" href="./assets/logoAlvaroAlme.1.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
 <link rel="stylesheet" href="mediaqueries.css" />
 </head>
 <body>
 <nav id="desktop-nav">
-<div class="logo" id="logo-img"><img src="./assets/logoAlvaroAlme.1.svg" id=""></div>
+<div class="logo" id="logo-img">A.Almecija</div>
 <div>
 <ul class="nav-links">
 <li><a href="#about">Sobre Mi</a></li>
@@ -36,13 +42,34 @@
 </div>
 </div>
 </nav>
+
 <section id="profile">
-<div class="section__pic-container">
-<img src="./assets/imagoAlvaroAlme.svg" alt="Alvaro Almecija - foto de perfil" />
+<div class="profile-grid">
+<div class="section__pic-container corner-marks">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
+<img src="./assets/imagoAlvaroAlme.svg" alt="Alvaro Almecija - marca personal" />
 </div>
-<div class="section__text">
+<div class="spec-panel corner-marks">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
+<p class="eyebrow">Desarrollador Web</p>
 <h1 class="title">Alvaro Almecija</h1>
-<p class="section__text__p2">Desarrollador Web</p>
+<p class="spec-lede">Vengo del diseño: cuido la interfaz tanto como la lógica que hay detrás. Ahora sumo análisis de datos para construir con más criterio.</p>
+<dl class="spec-fields">
+<div class="spec-field">
+<dt>Stack</dt>
+<dd>HTML · CSS · JavaScript · TypeScript · React</dd>
+</div>
+<div class="spec-field">
+<dt>Formación</dt>
+<dd>Técnico Superior en Desarrollo de Aplicaciones Web</dd>
+</div>
+</dl>
+<div class="btn-container hero-actions">
+<button class="btn btn-primary" onclick="location.href='./#projects'">Ver proyectos</button>
+<button class="btn btn-secondary" onclick="location.href='./#contact'">Contactar</button>
+</div>
 <div id="socials-container">
 <img
 src="./assets/linkedin.png"
@@ -58,12 +85,16 @@ onclick="location.href='https://github.com/AlvaroAlme'"
 />
 </div>
 </div>
+</div>
 </section>
+
 <section id="about">
-<p class="section__text__p1">Informacion</p>
-<h1 class="title">Sobre Mi</h1>
+<p class="section__text__p1">Información</p>
+<h2 class="title">Sobre Mi</h2>
 <div class="section-container">
-<div class="section__pic-container">
+<div class="section__pic-container corner-marks">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
 <img
 src="./assets/user.image.jpg"
 alt="Foto de perfil"
@@ -72,7 +103,9 @@ class="about-pic"
 </div>
 <div class="about-details-container">
 <div class="about-containers">
-<div class="details-container">
+<div class="details-container corner-marks">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
 <img
 src="./assets/education.png"
 alt="Education icon"
@@ -84,12 +117,19 @@ class="icon"
 </div>
 <div class="text-container">
 <p>
-Soy un desarrollador web apasionado por la creacion de aplicaciones
-web modernas y funcionales. Me encanta aprender nuevas tecnologias
-y mejorar mis habilidades constantemente. Siempre estoy buscando
-nuevos desafios y oportunidades para crecer en mi carrera.
-Me apasiona el diseno de interfaces y la experiencia del usuario, y me esfuerzo por
-crear aplicaciones que sean no solo funcionales, sino tambien atractivas y faciles de usar.
+Antes de programar pasé más de diez años en hostelería. Fue una etapa que me
+enseñó a mantener el ritmo bajo presión y a no dejar nada a medias, algo que
+sigo aplicando ahora. Cambié de sector porque el desarrollo web me obliga a
+aprender constantemente, y eso es justo lo que lo hace interesante para mí.
+</p>
+<p>
+Vengo del Bachillerato de Artes y Diseño, así que me muevo mejor en el
+frontend, el UX/UI y todo lo que tiene que ver con dar forma a una interfaz.
+También se me da bien plantear la lógica detrás y buscar la forma más
+eficiente de resolver un problema con los recursos que hay. Ahora mismo
+estoy sacándome una certificación de análisis de datos, con la idea de
+construir dashboards e informes que además de funcionar, se entiendan de
+un vistazo.
 </p>
 </div>
 </div>
@@ -101,80 +141,24 @@ class="icon arrow"
 onclick="location.href='./#experience'"
 />
 </section>
+
 <section id="experience">
 <p class="section__text__p1">Habilidades y </p>
-<h1 class="title">Experiencia</h1>
+<h2 class="title">Experiencia</h2>
 <div class="experience-details-container">
 <div class="about-containers">
-<div class="details-container">
-<h2 class="experience-sub-title">Tecnologias Utilizadas</h2>
-<div class="article-container">
-<article>
-<img
-src="./assets/checkmark.png"
-alt="Experience icon"
-class="icon"
-/>
-<div>
-<h3>HTML</h3>
-<p></p>
+<div class="details-container corner-marks skills-panel">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
+<h3 class="experience-sub-title">Tecnologias Utilizadas</h3>
+<div class="tag-row">
+<span class="tag">HTML</span>
+<span class="tag">CSS</span>
+<span class="tag">SASS</span>
+<span class="tag">JavaScript</span>
+<span class="tag">TypeScript</span>
+<span class="tag">Material UI</span>
 </div>
-</article>
-<article>
-<img
-src="./assets/checkmark.png"
-alt="Experience icon"
-class="icon"
-/>
-<div>
-<h3>CSS</h3>
-<p></p>
-</div>
-</article>
-<article>
-<img
-src="./assets/checkmark.png"
-alt="Experience icon"
-class="icon"
-/>
-<div>
-<h3>SASS</h3>
-<p></p>
-</div>
-</article>
-<article>
-<img
-src="./assets/checkmark.png"
-alt="Experience icon"
-class="icon"
-/>
-<div>
-<h3>JavaScript</h3>
-<p></p>
-</div>
-</article>
-<article>
-<img
-src="./assets/checkmark.png"
-alt="Experience icon"
-class="icon"
-/>
-<div>
-<h3>TypeScript</h3>
-<p></p>
-</div>
-</article>
-<article>
-<img
-src="./assets/checkmark.png"
-alt="Experience icon"
-class="icon"
-/>
-<div>
-<h3>Material UI</h3>
-<p></p>
-</div>
-</article>
 </div>
 </div>
 </div>
@@ -185,48 +169,67 @@ class="icon arrow"
 onclick="location.href='./#projects'"
 />
 </section>
+
 <section id="projects">
 <p class="section__text__p1">Ultimos</p>
-<h1 class="title">Proyectos</h1>
+<h2 class="title">Proyectos</h2>
 <div class="experience-details-container">
-<div class="about-containers">
-<div class="details-container color-container">
-    <img src="./proyectos/control-de-gastos/assets/iconoFinz.png" alt="Finz -  Control de gastos" class="project-img"/>
-    <h2 class="experience-sub-title project-title">Finz - Control de gastos</h2>
-    <div class="btn-container">
-        <button class="btn btn-color-2 project-btn" onclick="location.href='https://AlvaroAlme.github.io/portfolio-alvaroalme/proyectos/control-de-gastos/'">Ver demo del proyecto</button>
-        <button class="btn btn-color-2 project-btn" onclick="location.href='https://github.com/AlvaroAlme/portfolio-alvaroalme/tree/main/proyectos/control-de-gastos'">Ver código en Github</button>
-    </div>
+<div class="about-containers project-grid">
+<div class="details-container color-container corner-marks project-card">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
+<div class="project-img-frame">
+<img src="./proyectos/control-de-gastos/assets/finz-preview.png" alt="Finz - Control de gastos, formulario y listado de movimientos" class="project-img"/>
 </div>
-<div class="details-container color-container">
+<h3 class="experience-sub-title project-title">Finz — Control de gastos</h3>
+<p class="project-desc">App para registrar gastos e ingresos al momento, pensada para instalarse en el móvil como una app nativa.</p>
+<div class="tag-row project-tags">
+<span class="tag tag-data">HTML</span>
+<span class="tag tag-data">CSS</span>
+<span class="tag tag-data">JavaScript</span>
+</div>
+<div class="btn-container">
+<button class="btn btn-color-2 project-btn" onclick="location.href='https://AlvaroAlme.github.io/portfolio-alvaroalme/proyectos/control-de-gastos/'">Ver demo</button>
+<button class="btn btn-color-2 project-btn" onclick="location.href='https://github.com/AlvaroAlme/portfolio-alvaroalme/tree/main/proyectos/control-de-gastos'">Código</button>
+</div>
+</div>
+<div class="details-container color-container corner-marks project-card">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
+<div class="project-img-frame">
 <img
 src="./assets/project-2.png"
 alt="Invitacion de boda"
 class="project-img"
 />
-<h2 class="experience-sub-title project-title">Invitacion de Boda</h2>
+</div>
+<h3 class="experience-sub-title project-title">Invitación de Boda</h3>
 <div class="btn-container">
 <button
 class="btn btn-color-2 project-btn"
 onclick="location.href='https://github.com/AlvaroAlme/inviitaciones-boda-AnayAlvaro'"
 >
-Github
+Código
 </button>
 </div>
 </div>
-<div class="details-container color-container">
+<div class="details-container color-container corner-marks project-card">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
+<div class="project-img-frame">
 <img
 src="./assets/project-3.png"
 alt="Formulario de boda"
 class="project-img"
 />
-<h2 class="experience-sub-title project-title">Formulario de Boda</h2>
+</div>
+<h3 class="experience-sub-title project-title">Formulario de Boda</h3>
 <div class="btn-container">
 <button
 class="btn btn-color-2 project-btn"
 onclick="location.href='https://github.com/AlvaroAlme/formulario-boda'"
 >
-Github
+Código
 </button>
 </div>
 </div>
@@ -239,10 +242,13 @@ class="icon arrow"
 onclick="location.href='./#contact'"
 />
 </section>
+
 <section id="contact">
 <p class="section__text__p1">Datos de</p>
-<h1 class="title">Contacto</h1>
-<div class="contact-info-upper-container">
+<h2 class="title">Contacto</h2>
+<div class="contact-info-upper-container corner-marks">
+<span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+<span class="corner corner-bl"></span><span class="corner corner-br"></span>
 <div class="contact-info-container">
 <img
 src="./assets/email.png"
@@ -272,6 +278,7 @@ class="icon contact-icon"
 </ul>
 </div>
 </nav>
+<p class="footer-note">Alvaro Almecija — Desarrollador Web</p>
 </footer>
 <script src="script.js"></script>
 </body>

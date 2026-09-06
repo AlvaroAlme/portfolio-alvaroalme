@@ -5,10 +5,13 @@ const selectFamilia = document.getElementById("categoria");
 const mensajeError = document.getElementById("mensaje-error");
 const formCategoria = document.getElementById("categoria-form");
 const inputNuevaCategoria = document.getElementById("nueva-categoria");
+const btnCancelarEdicion = document.getElementById("btn-cancelar-edicion");
+const inputFecha = document.getElementById("fecha");
 
 const CLAVE_STORAGE = "control-de-gastos.gastos";
 
 let gastos = cargarGastos();
+let idEnEdicion = null;
 
 function cargarGastos(){
     const guardado = localStorage.getItem(CLAVE_STORAGE);
@@ -19,7 +22,36 @@ function cargarGastos(){
     return datos.map((movimiento) => ({
         ...movimiento,
         tipo: movimiento.tipo ?? "gasto",
+        fecha: normalizarFecha(movimiento.fecha),
     }));
+}
+
+function prepararEdicion(id){
+    const gasto = gastos.find((g) => g.id === id);
+    if(!gasto){
+        return;
+    }
+
+    idEnEdicion = id;
+    inputCantidad.value = gasto.cantidad;
+    inputNombreGasto.value = gasto.nombre;
+    selectFamilia.value = gasto.categoria;
+    document.querySelector(`input[name="tipo"][value="${gasto.tipo}"]`).checked = true;
+    inputFecha.value = gasto.fecha;
+
+    form.querySelector(".btn-primario").textContent = "Guardar cambios";
+    btnCancelarEdicion.hidden = false;
+    form.scrollIntoView({ behavior: "smooth"});
+}
+
+function cancelarEdicion(){
+    idEnEdicion = null;
+    form.reset();
+    form.querySelector(".btn-primario").textContent = "Añadir gasto";
+    btnCancelarEdicion.hidden = true;
+    mensajeError.textContent = "";
+
+    inputFecha.value = obtenerFechaHoyISO();
 }
 
 const CLAVE_STORAGE_CATEGORIAS = "control-de-gastos.categorias";
@@ -57,6 +89,13 @@ function guardarGastos(){
     localStorage.setItem(CLAVE_STORAGE, JSON.stringify(gastos));
 }
 
+function borrarGasto(id){
+    gastos = gastos.filter((gasto)=> gasto.id !== id);
+    guardarGastos();
+    renderGastos();
+    renderAnalisis();
+}
+
 const listaGastos = document.getElementById("lista-gastos");
 
 function renderGastos(){
@@ -74,7 +113,7 @@ function renderGastos(){
 
         const fecha = document.createElement("span");
         fecha.className = "gasto-fecha";
-        fecha.textContent = gasto.fecha;
+        fecha.textContent = formatearFecha(gasto.fecha);
 
         info.appendChild(nombre);
         info.appendChild(fecha);
@@ -89,12 +128,50 @@ function renderGastos(){
         const signo = esIngreso ? "+" : "-";
         cantidad.textContent = `${signo}${gasto.cantidad.toFixed(2)} €`;
 
+
+        const botones = document.createElement("div");
+        botones.className = "gasto-acciones";
+
+        const btnEditar = document.createElement("button");
+        btnEditar.type = "button";
+        btnEditar.className = "gasto-btn gasto-btn-editar";
+        btnEditar.textContent= "Editar";
+        btnEditar.dataset.id = gasto.id;
+
+        const btnBorrar = document.createElement("button");
+        btnBorrar.type = "button";
+        btnBorrar.className = "gasto-btn gasto-btn-borrar";
+        btnBorrar.textContent = "Borrar";
+        btnBorrar.dataset.id = gasto.id;
+
+        botones.appendChild(btnEditar);
+        botones.appendChild(btnBorrar);
+        
         item.appendChild(info);
         item.appendChild(categoria);
         item.appendChild(cantidad);
+        item.appendChild(botones);
         listaGastos.appendChild(item);
     }
 }
+
+listaGastos.addEventListener("click", function (evento) {
+    const boton = evento.target.closest(".gasto-btn");
+    if(!boton){
+        return;
+    }
+
+    const id = Number(boton.dataset.id);
+
+    if(boton.classList.contains("gasto-btn-borrar")){
+        borrarGasto(id);
+    } else if(boton.classList.contains("gasto-btn-editar")) {
+        prepararEdicion(id);
+    }
+});
+
+btnCancelarEdicion.addEventListener("click", cancelarEdicion);
+
 
 function renderCategorias(){
     selectFamilia.innerHTML = '<option value="" selected disabled>Selecciona una opcion</option>';
@@ -241,6 +318,30 @@ const exportBtn = document.getElementById("exportar-btn");
 exportBtn.addEventListener("click", descargarCSV);
 
 
+function obtenerFechaHoyISO(){
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoy.getDate()).padStart(2, "0");
+    return `${año}-${mes}-${dia}`;
+}
+
+function normalizarFecha(fecha){
+    if(fecha.includes("-")){
+        return fecha;
+    }
+    const partes = fecha.split("/");
+    const dia = partes[0].padStart(2, "0");
+    const mes = partes[1].padStart(2, "0");
+    const año = partes[2];
+    return `${año}-${mes}-${dia}`;
+}
+
+function formatearFecha(fechaISO){
+    const [año, mes, dia] = fechaISO.split("-");
+    return `${dia}/${mes}/${año}`;
+}
+
 
 
 
@@ -252,6 +353,7 @@ form.addEventListener("submit", function (evento){
     const nombre = inputNombreGasto.value.trim();
     const categoria = selectFamilia.value;
     const tipo = document.querySelector('input[name="tipo"]:checked').value;
+    const fecha = inputFecha.value;
 
     if ( textoCantidad === "" || isNaN(cantidad) || cantidad <= 0){
         mensajeError.textContent = "Introduce una cantidad valida, mayor que 0";
@@ -265,26 +367,44 @@ form.addEventListener("submit", function (evento){
         mensajeError.textContent = "Selecciona una categoria.";
         return;
     }
+    if(fecha === ""){
+        mensajeError.textContent = "Selecciona una fecha.";
+        return;
+    }
 
     
     mensajeError.textContent = "";
-    const fecha = new Date().toLocaleDateString();
 
-    const nuevoGasto = {
-        id:generarId(),
-        nombre: nombre,
-        cantidad: cantidad,
-        categoria: categoria,
-        fecha: fecha,
-        tipo: tipo,
-    };
+    if(idEnEdicion !== null){
+        const gasto =  gastos.find((g) => g.id === idEnEdicion);
+        gasto.nombre = nombre;
+        gasto.cantidad = cantidad;
+        gasto.categoria = categoria;
+        gasto.tipo = tipo;
+        gasto.fecha = fecha; 
 
-    gastos.push(nuevoGasto);
+        idEnEdicion = null;
+        form.querySelector(".btn-primario").textContent = "Añadir gasto";
+        btnCancelarEdicion.hidden = true;
+    } else {
+        
+        const nuevoGasto = {
+            id: generarId(),
+            nombre: nombre,
+            cantidad:cantidad,
+            categoria: categoria,
+            fecha: fecha,
+            tipo: tipo,
+        };
+        gastos.push(nuevoGasto);
+    }
+
     guardarGastos();
     renderGastos();
     renderAnalisis();
-
     form.reset();
+
+    inputFecha.value = obtenerFechaHoyISO();
 
 });
 
@@ -307,6 +427,8 @@ formCategoria.addEventListener("submit", function (evento){
 
     formCategoria.reset();
 });
+
+inputFecha.value = obtenerFechaHoyISO();
 
 renderGastos();
 renderCategorias();

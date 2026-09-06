@@ -42,7 +42,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .gasto-item {
-    animation: aparecer 220ms ease-out;
+    animation: aparecer 1000ms ease-out;
   }
 }
 
@@ -145,6 +145,30 @@ h1 {
 
 .tab-panel.activo {
   display: block;
+}
+
+/* display:none → block no se puede animar directamente (no hay
+   estado intermedio que transicionar), pero SÍ se puede lanzar una
+   animación en el momento en que el panel aparece: el navegador
+   pinta el primer fotograma de la animación nada más mostrarlo.
+   Mismo recurso que ya usas en .gasto-item, aplicado aquí al
+   cambio de pestaña para que deje de sentirse un "salto" seco. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .tab-panel.activo {
+    animation: aparecer-panel 450ms ease-out;
+  }
+}
+
+@keyframes aparecer-panel {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #ajustes h2,
@@ -268,6 +292,31 @@ h1 {
   font-size: 1.15rem;
 }
 
+/* La fecha es un dato, no una frase — mismo tratamiento tipográfico
+   que la cantidad (mono, en vez de la sans del resto del formulario). */
+
+#fecha {
+  font-family: var(--font-data);
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+/* El icono del calendario es un SVG del propio navegador: no se
+   puede recolorear con "color" ni "fill" normales. El truco es
+   forzarlo primero a negro puro (brightness(0) saturate(100%),
+   así el resultado no depende del gris que traiga cada navegador
+   por defecto) y luego usar el resto de filtros de imagen como una
+   receta que convierte ese negro en el verde de marca — no hay
+   forma más directa de teñir un icono nativo con CSS. Solo afecta
+   a navegadores basados en Chromium/WebKit (Chrome, Edge, Safari);
+   Firefox no expone este icono como pseudo-elemento, así que ahí
+   simplemente conserva su color por defecto. */
+
+#fecha::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(41%) sepia(36%) saturate(432%) hue-rotate(78deg) brightness(71%) contrast(90%);
+}
+
 .gasto-form select {
   appearance: none;
   -webkit-appearance: none;
@@ -374,6 +423,15 @@ h1 {
   color: var(--ink);
 }
 
+/* El botón "Cancelar edición" comparte estilo con "Descargar CSV",
+   pero vive dentro del formulario: el gap de .gasto-form ya separa
+   los elementos, así que anulamos aquí el margen pensado para
+   cuando .btn-secundario está fuera del form. */
+
+.gasto-form .btn-secundario {
+  margin-bottom: 0;
+}
+
 /* ---------- Mensajes de error ---------- */
 
 #mensaje-error {
@@ -393,10 +451,13 @@ h1 {
 }
 
 .gasto-item {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "info      cantidad"
+    "categoria acciones";
+  row-gap: 0.4rem;
+  column-gap: 0.75rem;
   padding: 0.85rem 0;
   border-top: 1px solid var(--rule);
 }
@@ -406,6 +467,7 @@ h1 {
 }
 
 .gasto-info {
+  grid-area: info;
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
@@ -427,6 +489,7 @@ h1 {
 }
 
 .gasto-categoria {
+  grid-area: categoria;
   font-family: var(--font-data);
   font-size: 0.68rem;
   letter-spacing: 0.04em;
@@ -437,12 +500,53 @@ h1 {
 }
 
 .gasto-cantidad {
+  grid-area: cantidad;
+  justify-self: end;
   font-family: var(--font-data);
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--debit);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+}
+
+/* Editar / Borrar: texto en mono minúsculo, como una anotación
+   al margen del apunte — no botones con caja, para no competir
+   visualmente con la cifra ni con la etiqueta de categoría. */
+
+.gasto-acciones {
+  grid-area: acciones;
+  justify-self: end;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.gasto-btn {
+  background: none;
+  border: none;
+  padding: 0.3rem 0.1rem;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.gasto-btn:hover {
+  color: var(--ink);
+}
+
+.gasto-btn-borrar:hover {
+  color: var(--debit);
+}
+
+.gasto-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
 }
 
 .gasto-cantidad--ingreso {

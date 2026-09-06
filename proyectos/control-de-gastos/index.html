@@ -26,6 +26,7 @@
             <form class="gasto-form">
                 <input type="text" inputmode="decimal" id="cantidad" placeholder="0.00 €"/>
                 <input type="text" id="nombre-gastos" placeholder="Ej: Cena"/>
+                <input type="date" id="fecha"/>
                 <select name="categoria-gastos" id="categoria">
 
                 </select>
@@ -38,6 +39,7 @@
                     </label>
                 </div>
                 <button type="submit" class="btn-primario">Añadir gasto</button>
+                <button type="button" id="btn-cancelar-edicion" class="btn-secundario" hidden>Cancelar edicion</button>
             </form>
 
             <button id="exportar-btn" type="button" class="btn-secundario">Descargar CSV</button>
