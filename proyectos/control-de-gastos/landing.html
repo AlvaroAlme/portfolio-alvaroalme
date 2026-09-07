@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finz — Control de gastos</title>
+<meta name="description" content="Finz es una web app para llevar tus ingresos y gastos como un libro de cuentas: simple, privada y sin registro." />
+<link rel="apple-touch-icon" href="assets/icon-180.png" />
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,500;1,8..60,500;0,8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+@font-face {
+  font-family: "Brolian";
+  src: url("assets/Brolian-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --ledger-void: #e9eae2;
+  --ledger-page: #f7f7f1;
+  --ink: #22262b;
+  --ink-soft: #6b7268;
+  --rule: #c9cdbe;
+  --debit: #7a2e22;
+  --brand: #3b5d42;
+  --brand-dark: #2e4a35;
+
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", "Courier New", monospace;
+  --font-wordmark: "Brolian", "Segoe UI", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--ledger-void);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.envolvente {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+a {
+  color: inherit;
+}
+
+/* ---------- Cabecera ---------- */
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.75rem 0;
+}
+
+.cabecera-marca {
+  font-family: var(--font-wordmark);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: var(--brand);
+  letter-spacing: -0.02em;
+}
+
+.cabecera-enlace {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.15rem;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.cabecera-enlace:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
+/* ---------- Héroe: la portada del libro ---------- */
+
+.hero {
+  padding: 3.5rem 0 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  margin-bottom: 2.5rem;
+}
+
+/* ---------- El visual del héroe: un pequeño perfil de barras,
+   como el "skyline" de un gráfico de barras, con la F de Finz
+   como el pico central — el mismo lenguaje que usa la pestaña
+   de Análisis, pero como marca en vez de como dato. Las barras
+   más próximas a la F llevan los dos colores que ya significan
+   algo en el resto de la app: verde para ingreso, rojo para
+   gasto — no son decorativas, citan tu propio sistema. ---------- */
+
+.hero-visual {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.5rem, 2vw, 1.1rem);
+  height: clamp(7rem, 16vw, 10rem);
+  margin-bottom: 2rem;
+}
+
+.barra {
+  display: block;
+  width: clamp(0.6rem, 1.6vw, 0.95rem);
+  height: var(--altura);
+  background: var(--color);
+  border-radius: 2px 2px 0 0;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: crecer-barra 550ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: var(--demora);
+}
+
+.hero-f {
+  font-family: var(--font-wordmark);
+  font-weight: 900;
+  font-size: clamp(5.5rem, 14vw, 8.5rem);
+  line-height: 1;
+  color: var(--brand);
+  letter-spacing: -0.02em;
+  opacity: 0;
+  transform: scale(0.85) translateY(6px);
+  animation: aparecer-f 480ms ease-out forwards;
+  animation-delay: 260ms;
+}
+
+@keyframes crecer-barra {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes aparecer-f {
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.hero-tagline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 34ch;
+  margin-bottom: 2rem;
+}
+
+.hero-acciones {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: aparecer-acciones 450ms ease-out forwards;
+  animation-delay: 700ms;
+}
+
+@keyframes aparecer-acciones {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-cta {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ledger-page);
+  background: var(--brand);
+  padding: 0.9rem 1.6rem;
+  border-radius: 0.4rem;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.btn-cta:hover {
+  background: var(--brand-dark);
+}
+
+.hero-secundario {
+  font-family: var(--font-data);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.15rem;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.hero-secundario:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra,
+  .hero-f,
+  .hero-acciones {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Secciones generales ---------- */
+
+section {
+  padding: 4rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.seccion-titulo {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.5rem;
+}
+
+.seccion-h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.9rem;
+  color: var(--ink);
+  max-width: 26ch;
+  margin-bottom: 2.5rem;
+}
+
+/* ---------- Funcionalidades: como asientos de un libro mayor,
+   con su referencia numerada y una línea que los separa ---------- */
+
+.libro {
+  border-top: 1px solid var(--rule);
+}
+
+.asiento {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: 1.5rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--rule);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.asiento.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.asiento-ref {
+  font-family: var(--font-data);
+  font-size: 0.85rem;
+  color: var(--brand);
+  padding-top: 0.2rem;
+}
+
+.asiento-titulo {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 0.4rem;
+}
+
+.asiento-desc {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 52ch;
+}
+
+/* ---------- Capturas ---------- */
+
+.capturas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+.captura {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.captura.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.captura img {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid var(--rule);
+  display: block;
+}
+
+.captura-etiqueta {
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 0.85rem;
+  text-align: center;
+}
+
+/* ---------- Cómo está construida ---------- */
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 2.5rem;
+}
+
+.stack-tag {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  color: var(--brand);
+  background: var(--ledger-page);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+}
+
+.nota-tecnica {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 62ch;
+  border-left: 3px solid var(--brand);
+  padding-left: 1.25rem;
+}
+
+/* ---------- Pie ---------- */
+
+.pie {
+  padding: 2.5rem 0 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pie-marca {
+  font-family: var(--font-wordmark);
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--brand);
+}
+
+.pie-enlaces {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.pie-enlaces a {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.pie-enlaces a:hover {
+  color: var(--brand);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 760px) {
+  .hero {
+    padding-top: 1rem;
+  }
+
+  .capturas {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .asiento {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asiento,
+  .captura {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="envolvente">
+  <header class="cabecera">
+    <span class="cabecera-marca">Finz</span>
+    <a class="cabecera-enlace" href="https://github.com/AlvaroAlme/portfolio-alvaroalme" target="_blank" rel="noopener">Código en GitHub</a>
+  </header>
+
+  <section class="hero" style="border-top: none; padding-top: 1.5rem;">
+    <span class="hero-eyebrow">Web app · Instalable · Sin registro</span>
+
+    <div class="hero-visual" aria-hidden="true">
+      <span class="barra" style="--altura: 28px; --color: var(--rule); --demora: 0ms;"></span>
+      <span class="barra" style="--altura: 48px; --color: var(--ink-soft); --demora: 90ms;"></span>
+      <span class="barra" style="--altura: 74px; --color: var(--brand); --demora: 180ms;"></span>
+      <span class="hero-f">F</span>
+      <span class="barra" style="--altura: 74px; --color: var(--debit); --demora: 180ms;"></span>
+      <span class="barra" style="--altura: 48px; --color: var(--ink-soft); --demora: 90ms;"></span>
+      <span class="barra" style="--altura: 28px; --color: var(--rule); --demora: 0ms;"></span>
+    </div>
+
+    <p class="hero-tagline">Lleva tus ingresos y gastos como un libro de cuentas: una línea por movimiento, categorías claras y el balance siempre a la vista.</p>
+
+    <div class="hero-acciones">
+      <a class="btn-cta" href="index.html">Ver mis movimientos</a>
+      <a class="hero-secundario" href="#funcionalidades">Ver qué más hace ↓</a>
+    </div>
+  </section>
+
+  <section id="funcionalidades">
+    <div class="seccion-titulo">Qué apunta</div>
+    <h2 class="seccion-h2">Cinco asientos, toda la funcionalidad que necesitas para llevar tus cuentas al día.</h2>
+
+    <div class="libro">
+      <article class="asiento">
+        <span class="asiento-ref">01</span>
+        <div>
+          <div class="asiento-titulo">Ingresos y gastos en un mismo sitio</div>
+          <p class="asiento-desc">Cada movimiento se anota con nombre, cantidad, categoría y fecha — la misma fecha se puede corregir después, por si se te olvida apuntar algo el mismo día.</p>
+        </div>
+      </article>
+      <article class="asiento">
+        <span class="asiento-ref">02</span>
+        <div>
+          <div class="asiento-titulo">Categorías a tu medida</div>
+          <p class="asiento-desc">Trece categorías de partida, y puedes añadir las tuyas propias desde Ajustes cuando necesites una que no está.</p>
+        </div>
+      </article>
+      <article class="asiento">
+        <span class="asiento-ref">03</span>
+        <div>
+          <div class="asiento-titulo">Análisis por categoría</div>
+          <p class="asiento-desc">Un resumen de ingresos, gastos y balance, más una tabla que te dice en qué categoría se te va más dinero cada mes.</p>
+        </div>
+      </article>
+      <article class="asiento">
+        <span class="asiento-ref">04</span>
+        <div>
+          <div class="asiento-titulo">Editar y borrar sin miedo</div>
+          <p class="asiento-desc">Si te equivocas al apuntar un gasto, lo corriges o lo eliminas en dos toques — sin tener que borrar todo y empezar de nuevo.</p>
+        </div>
+      </article>
+      <article class="asiento">
+        <span class="asiento-ref">05</span>
+        <div>
+          <div class="asiento-titulo">Se instala como una app</div>
+          <p class="asiento-desc">Añádela a la pantalla de inicio de tu móvil (iOS o Android) y ábrela como cualquier otra app, sin pasar por el navegador.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="seccion-titulo">De un vistazo</div>
+    <h2 class="seccion-h2">Así se ve por dentro.</h2>
+
+    <div class="capturas">
+      <div class="captura">
+        <img src="assets/captura-movimientos.png" alt="Pestaña Movimientos de Finz, con el formulario y la lista de gastos e ingresos" />
+        <div class="captura-etiqueta">Movimientos</div>
+      </div>
+      <div class="captura">
+        <img src="assets/captura-analisis.png" alt="Pestaña Análisis de Finz, con el resumen de ingresos, gastos y balance" />
+        <div class="captura-etiqueta">Análisis</div>
+      </div>
+      <div class="captura">
+        <img src="assets/captura-ajustes.png" alt="Pestaña Ajustes de Finz, con la lista de categorías" />
+        <div class="captura-etiqueta">Ajustes</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="seccion-titulo">Cómo está hecha</div>
+    <h2 class="seccion-h2">Sin frameworks, sin servidor: HTML, CSS y JavaScript, y punto.</h2>
+
+    <div class="stack">
+      <span class="stack-tag">HTML5</span>
+      <span class="stack-tag">CSS3</span>
+      <span class="stack-tag">JavaScript vanilla</span>
+      <span class="stack-tag">localStorage</span>
+      <span class="stack-tag">Web App Manifest</span>
+    </div>
+
+    <p class="nota-tecnica">Todos tus datos se quedan en tu propio navegador — no hay base de datos ni servidor de por medio. Eso significa que Finz funciona sin conexión y que nadie más que tú ve tus cuentas, pero también que los datos no viajan solos entre tu móvil y tu ordenador: cada dispositivo lleva su propio libro.</p>
+  </section>
+
+  <footer class="pie">
+    <span class="pie-marca">Finz</span>
+    <div class="pie-enlaces">
+      <a href="index.html">Abrir la app</a>
+      <a href="https://alvaroalme.github.io/portfolio-alvaroalme/" target="_blank" rel="noopener">Volver al portfolio</a>
+      <a href="https://github.com/AlvaroAlme/portfolio-alvaroalme" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Revela cada asiento y captura al entrar en pantalla, con un
+  // pequeño desfase entre ellos — un único efecto orquestado en
+  // vez de animaciones sueltas por todos lados.
+  const observador = new IntersectionObserver((entradas) => {
+    entradas.forEach((entrada, indice) => {
+      if (entrada.isIntersecting) {
+        setTimeout(() => entrada.target.classList.add("visible"), indice * 60);
+        observador.unobserve(entrada.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll(".asiento, .captura").forEach((el) => observador.observe(el));
+</script>
+
+</body>
+</html>
