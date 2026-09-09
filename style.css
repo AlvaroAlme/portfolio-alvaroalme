@@ -602,6 +602,7 @@ article .icon {
 }
 
 .project-img-frame {
+  position: relative;
   aspect-ratio: 4 / 3;
   border-radius: var(--radius);
   overflow: hidden;
@@ -616,6 +617,118 @@ article .icon {
   object-fit: cover;
   object-position: top center;
   display: block;
+}
+
+.loading-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background-color: var(--ground);
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.loading-bar {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.loading-bar span {
+  width: 0.55rem;
+  height: 1.6rem;
+  background: var(--line);
+  animation: loading-blink 1.2s ease-in-out infinite;
+}
+
+.loading-bar span:nth-child(1) {
+  animation-delay: 0s;
+}
+.loading-bar span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.loading-bar span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.loading-bar span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.loading-bar span:nth-child(5) {
+  animation-delay: 0.4s;
+}
+.loading-bar span:nth-child(6) {
+  animation-delay: 0.5s;
+}
+.loading-bar span:nth-child(7) {
+  animation-delay: 0.6s;
+}
+.loading-bar span:nth-child(8) {
+  animation-delay: 0.7s;
+}
+
+@keyframes loading-blink {
+  0%,
+  100% {
+    background: var(--line);
+    transform: scaleY(0.6);
+  }
+  50% {
+    background: var(--signal);
+    transform: scaleY(1);
+  }
+}
+
+.loading-text {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+}
+
+.wip-badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--signal-dark);
+  background: var(--panel);
+  border: 1px solid var(--signal);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem 0.35rem 0.55rem;
+}
+
+.wip-badge::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 0 rgba(196, 71, 27, 0.55);
+  animation: wip-pulse 1.6s ease-out infinite;
+}
+
+@keyframes wip-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(196, 71, 27, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(196, 71, 27, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(196, 71, 27, 0);
+  }
 }
 
 .project-title {
