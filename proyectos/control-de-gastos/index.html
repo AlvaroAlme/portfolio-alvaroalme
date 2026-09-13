@@ -1,89 +1,201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Control de gastos</title>
-        <meta name="apple-mobile-web-app-capable" content="yes"/>
-        <meta name="apple-mobile-web-app-title" content="Finz"/>
-        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-        <link rel="apple-touch-icon" href="assets/icon-180.png"/>
-        <link rel="stylesheet" href="style.css" />
-        <link rel="manifest" href="manifest.json"/>
-        <meta name="theme-color" content="#3b5d42"/>
-    </head>
-    <body>
-       <div class="app">
-            <h1>Finz</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control de gastos</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Finz" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" href="assets/icon-180.png" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#3b5d42" />
+  </head>
+  <body>
+    <div class="app">
+      <h1>Finz</h1>
 
-            <nav class="tabs">
-                <button type="button" class="tab-btn" data-tab="movimientos">Movimientos</button>
-                <button type="button" class="tab-btn" data-tab="ajustes">Ajustes</button>
-                <button type="button" class="tab-btn" data-tab="analisis"> Analisis</button>
-            </nav>
+      <nav class="tabs">
+        <button type="button" class="tab-btn" data-tab="movimientos">
+          Movimientos
+        </button>
+        <button type="button" class="tab-btn" data-tab="ajustes">
+          Ajustes
+        </button>
+        <button type="button" class="tab-btn" data-tab="analisis">
+          Analisis
+        </button>
+      </nav>
 
-        <section id="movimientos" class="tab-panel activo">
-            <form class="gasto-form">
-                <input type="text" inputmode="decimal" id="cantidad" placeholder="0.00 €"/>
-                <input type="text" id="nombre-gastos" placeholder="Ej: Cena"/>
-                <input type="date" id="fecha"/>
-                <select name="categoria-gastos" id="categoria">
+      <section id="movimientos" class="tab-panel activo">
+        <form class="gasto-form">
+          <input
+            type="text"
+            inputmode="decimal"
+            id="cantidad"
+            placeholder="Importe €"
+          />
+          <input type="text" id="nombre-gastos" placeholder="Concepto" />
+          <input type="date" id="fecha" />
+          <select name="categoria-gastos" id="categoria"></select>
+          <div class="tipo-selector">
+            <label>
+              <input type="radio" name="tipo" value="gasto" checked /> Gasto
+            </label>
+            <label>
+              <input type="radio" name="tipo" value="ingreso" /> Ingreso
+            </label>
+          </div>
+          <button type="submit" class="btn-primario">Añadir gasto</button>
+          <button
+            type="button"
+            id="btn-cancelar-edicion"
+            class="btn-secundario"
+            hidden
+          >
+            Cancelar edicion
+          </button>
+        </form>
 
-                </select>
-                <div class="tipo-selector">
-                    <label>
-                        <input type="radio" name="tipo" value="gasto" checked/> Gasto
-                    </label>
-                    <label>
-                        <input type="radio" name="tipo" value="ingreso" /> Ingreso
-                    </label>
-                </div>
-                <button type="submit" class="btn-primario">Añadir gasto</button>
-                <button type="button" id="btn-cancelar-edicion" class="btn-secundario" hidden>Cancelar edicion</button>
-            </form>
+        <button id="exportar-btn" type="button" class="btn-secundario">
+          Descargar CSV
+        </button>
+        <p id="mensaje-error"></p>
+        <ul id="lista-gastos"></ul>
+      </section>
 
-            <button id="exportar-btn" type="button" class="btn-secundario">Descargar CSV</button>
-            <p id="mensaje-error"></p>
-            <ul id="lista-gastos"></ul>
-        </section>
+      <section id="ajustes" class="tab-panel">
+        <h2>Ajustes</h2>
+        <form id="categoria-form">
+          <input
+            type="text"
+            id="nueva-categoria"
+            placeholder="Nueva categoria"
+          />
+          <button type="submit">Añadir categoria</button>
+        </form>
+        <ul id="lista-categorias"></ul>
+      </section>
+      <section id="analisis" class="tab-panel">
+        <h2>Análisis</h2>
 
-        <section id="ajustes" class="tab-panel">
-            <h2>Ajustes</h2>
-            <form id="categoria-form">
-                <input type="text" id="nueva-categoria" placeholder="Nueva categoria"/>
-                <button type="submit">Añadir categoria</button>
-            </form>
-            <ul id="lista-categorias"></ul>
-        </section>
-        <section id="analisis" class="tab-panel">
-            <h2>Análisis</h2>
-            <div class="resumen-totales">
-                <div>
-                    <span class="resumen-label">Ingresos</span>
-                    <span id="total-ingresos" class="resumen-valor"></span>
-                </div>
-                <div>
-                    <span class="resumen-label">Gastos</span>
-                    <span id="total-gastos" class="resumen-valor"></span>
-                </div>
-                <div>
-                    <span class="resumen-label">Balance</span>
-                    <span id="balance" class="resumen-valor"></span>
-                </div>
+        <nav class="subtabs">
+          <button
+            type="button"
+            class="subtab-btn activo"
+            data-subtab="graficas"
+          >
+            Gráficas
+          </button>
+          <button type="button" class="subtab-btn" data-subtab="buscar">
+            Buscar
+          </button>
+        </nav>
+
+        <div id="graficas" class="subtab-panel activo">
+          <div class="resumen-totales">
+            <div>
+              <span class="resumen-label-fila">
+                <span class="resumen-label">Ingresos</span>
+                <span class="ayuda" tabindex="0"
+                  >?<span class="ayuda-texto"
+                    >Suma de todos los movimientos marcados como "Ingreso"
+                    dentro del periodo y filtros aplicados.</span
+                  ></span
+                >
+              </span>
+              <span id="total-ingresos" class="resumen-valor"></span>
             </div>
-            <p id="categoria-destacada"></p>
+            <div>
+              <span class="resumen-label-fila">
+                <span class="resumen-label">Gastos</span>
+                <span class="ayuda" tabindex="0"
+                  >?<span class="ayuda-texto"
+                    >Suma de todos los movimientos marcados como "Gasto" dentro
+                    del periodo y filtros aplicados.</span
+                  ></span
+                >
+              </span>
+              <span id="total-gastos" class="resumen-valor"></span>
+            </div>
+            <div>
+              <span class="resumen-label-fila">
+                <span class="resumen-label">Balance</span>
+                <span class="ayuda" tabindex="0"
+                  >?<span class="ayuda-texto"
+                    >Ingresos menos gastos del periodo filtrado: lo que te queda
+                    (o te falta) en ese tramo de tiempo.</span
+                  ></span
+                >
+              </span>
+              <span id="balance" class="resumen-valor"></span>
+            </div>
+          </div>
+          <p id="categoria-destacada"></p>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Categoría</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-categorias-cuerpo"></tbody>
-            </table>
-        </section>
+          <div class="analisis-graficos">
+            <div class="grafico-contenedor">
+              <p class="grafico-titulo">
+                Gastos por categoría
+                <span class="ayuda" tabindex="0"
+                  >?<span class="ayuda-texto"
+                    >Reparte tus gastos del periodo filtrado por
+                    categoría.</span
+                  ></span
+                >
+              </p>
+              <canvas id="grafico-categorias"></canvas>
+            </div>
+
+            <div class="grafico-contenedor">
+              <p class="grafico-titulo">
+                Evolución del balance
+                <span class="ayuda" tabindex="0"
+                  >?<span class="ayuda-texto"
+                    >Cómo sube o baja tu balance acumulado con cada movimiento,
+                    en el orden en que ocurrieron.</span
+                  ></span
+                >
+              </p>
+              <canvas id="grafico-balance"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div id="buscar" class="subtab-panel">
+          <div class="analisis-filtros">
+            <label class="filtro-fecha">
+              Desde
+              <input type="date" id="fecha-desde" />
+            </label>
+            <label class="filtro-fecha">
+              Hasta
+              <input type="date" id="fecha-hasta" />
+            </label>
+            <input
+              type="text"
+              id="buscador-analisis"
+              class="filtro-buscador"
+              placeholder="Buscar por nombre o fecha..."
+            />
+            <button
+              type="button"
+              id="btn-limpiar-filtros"
+              class="btn-limpiar-filtros"
+            >
+              Limpiar
+            </button>
+          </div>
+
+          <div
+            id="detalle-categorias-lista"
+            class="detalle-categorias-acordeon"
+          ></div>
+        </div>
+      </section>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>
-    </body>
+  </body>
 </html>

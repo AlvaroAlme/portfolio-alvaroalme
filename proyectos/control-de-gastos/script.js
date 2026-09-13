@@ -7,11 +7,106 @@ const formCategoria = document.getElementById("categoria-form");
 const inputNuevaCategoria = document.getElementById("nueva-categoria");
 const btnCancelarEdicion = document.getElementById("btn-cancelar-edicion");
 const inputFecha = document.getElementById("fecha");
+const inputFechaDesde = document.getElementById("fecha-desde");
+const inputFechaHasta = document.getElementById("fecha-hasta");
+const inputBuscadorAnalisis = document.getElementById("buscador-analisis");
+const btnLimpiarFiltros = document.getElementById("btn-limpiar-filtros");
 
 const CLAVE_STORAGE = "control-de-gastos.gastos";
 
 let gastos = cargarGastos();
 let idEnEdicion = null;
+
+let graficoCategorias = null;
+let graficoBalance = null;
+
+const COLORES_CATEGORIAS = [
+    "#3b5d42", "#7a2e22", "#a8763e", "#4f6d7a", "#8a8c5f",
+    "#7d5a8c", "#b08d57", "#5c7a5e", "#9c5148", "#6b7268",
+];
+const CLAVE_STORAGE_COLORES = "control-de-gastos.coloresCategorias";
+
+function cargarColoresCategorias(){
+    const guardado = localStorage.getItem(CLAVE_STORAGE_COLORES);
+    if(!guardado){
+        return {};
+    }
+    return JSON.parse(guardado);
+}
+
+function guardarColoresCategorias(){
+    localStorage.setItem(CLAVE_STORAGE_COLORES, JSON.stringify(coloresCategorias));
+}
+
+let coloresCategorias = cargarColoresCategorias();
+
+function generarColorAleatorio(){
+    const tono = Math.floor(Math.random() * 360);
+    return `hsl(${tono}, 35%, 40%)`;
+}
+
+function obtenerColorParaCategoria(categoria){
+    if(coloresCategorias[categoria]){
+        return coloresCategorias[categoria];
+    }
+
+    const coloresUsados = Object.values(coloresCategorias);
+    let colorNuevo = COLORES_CATEGORIAS.find((color) => !coloresUsados.includes(color));
+
+    if(!colorNuevo){
+        do {
+            colorNuevo = generarColorAleatorio();
+        } while (coloresUsados.includes(colorNuevo));
+    }
+
+    coloresCategorias[categoria] = colorNuevo;
+    guardarColoresCategorias();
+    return colorNuevo;
+}
+
+function actualizarGraficos(listaGastos){
+    const totalesPorCategoria = calcularGastosPorCategoria(listaGastos);
+    const categorias = Object.keys(totalesPorCategoria);
+
+    if(graficoCategorias){
+        graficoCategorias.destroy();
+    }
+    graficoCategorias = new Chart(document.getElementById("grafico-categorias"), {
+        type: "pie",
+        data: {
+            labels: categorias,
+            datasets: [{
+                data: Object.values(totalesPorCategoria),
+                backgroundColor: categorias.map((categoria) => obtenerColorParaCategoria(categoria)),
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        },
+    });
+
+
+    const balance = calcularBalanceAcumulado(listaGastos);
+
+    if(graficoBalance){
+        graficoBalance.destroy();
+    }
+    graficoBalance = new Chart(document.getElementById("grafico-balance"), {
+        type: "line",
+        data: {
+            labels: balance.etiquetas,
+            datasets: [{
+                label: "Balance acumulado",
+                data: balance.valores,
+                borderColor: "#3b5d42",
+                fill: false,
+                tension: 0.2,
+            }],
+        },
+        options: { responsive: true, maintainAspectRatio: false },
+    });
+}
 
 function cargarGastos(){
     const guardado = localStorage.getItem(CLAVE_STORAGE);
@@ -135,18 +230,23 @@ function renderGastos(){
         const btnEditar = document.createElement("button");
         btnEditar.type = "button";
         btnEditar.className = "gasto-btn gasto-btn-editar";
-        btnEditar.textContent= "Editar";
+        btnEditar.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>';
+        btnEditar.setAttribute("aria-label", "Editar gasto");
+        btnEditar.title = "Editar";
         btnEditar.dataset.id = gasto.id;
 
         const btnBorrar = document.createElement("button");
         btnBorrar.type = "button";
         btnBorrar.className = "gasto-btn gasto-btn-borrar";
-        btnBorrar.textContent = "Borrar";
+        btnBorrar.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+        btnBorrar.setAttribute("aria-label", "Borrar gasto");
+        btnBorrar.title = "Borrar";
         btnBorrar.dataset.id = gasto.id;
+
 
         botones.appendChild(btnEditar);
         botones.appendChild(btnBorrar);
-        
+
         item.appendChild(info);
         item.appendChild(categoria);
         item.appendChild(cantidad);
@@ -240,11 +340,11 @@ function descargarCSV(){
 }
 
 
-function calcularTotales(){
+function calcularTotales(listaGastos){
     let totalGastos = 0;
     let totalIngresos = 0;
 
-    for(const gasto of gastos){
+    for(const gasto of listaGastos){
         if(gasto.tipo === "ingreso"){
             totalIngresos += gasto.cantidad;
         } else {
@@ -259,10 +359,10 @@ function calcularTotales(){
     };
 }
 
-function calcularGastosPorCategoria(){
+function calcularGastosPorCategoria(listaGastos){
     const totalesPorCategoria = {};
 
-    for(const gasto of gastos){
+    for(const gasto of listaGastos){
         if(gasto.tipo === "ingreso"){
             continue;
         }
@@ -270,6 +370,32 @@ function calcularGastosPorCategoria(){
         totalesPorCategoria[gasto.categoria] = acumulado + gasto.cantidad;
     }
     return totalesPorCategoria;
+}
+
+
+
+function calcularBalanceAcumulado(listaGastos){
+    const ordenados = [...listaGastos].sort((a,b) => a.fecha.localeCompare(b.fecha));
+    let acumulado = 0;
+    const etiquetas = [];
+    const valores = [];
+    let ultimaFecha = null;
+
+    for(const gasto of ordenados){
+        acumulado += gasto.tipo === "ingreso" ? gasto.cantidad : -gasto.cantidad;
+
+        if(gasto.fecha === ultimaFecha){
+            valores[valores.length - 1] = acumulado;
+        } else {
+            
+        
+        etiquetas.push(formatearFecha(gasto.fecha));
+        valores.push(acumulado);
+        ultimaFecha = gasto.fecha;
+        }
+    }
+
+    return { etiquetas, valores };
 }
 
 function categoriaConMasGasto(totalesPorCategoria){
@@ -282,35 +408,90 @@ function categoriaConMasGasto(totalesPorCategoria){
     });
 }
 
+
+function obtenerGastosFiltrados(){
+    const desde = inputFechaDesde.value;
+    const hasta = inputFechaHasta.value;
+    const texto = inputBuscadorAnalisis.value.trim().toLowerCase();
+
+    return gastos.filter(function (gasto){
+        if(desde && gasto.fecha < desde){
+            return false;
+        }
+        if(hasta && gasto.fecha > hasta){
+            return false;
+        }
+        if(texto !== ""){
+            const coincideNombre = gasto.nombre.toLowerCase().includes(texto);
+            const coincideFecha = formatearFecha(gasto.fecha).includes(texto);
+            if(!coincideNombre && !coincideFecha){
+                return false;
+            }
+        }
+        return true;
+    });
+}
+
 function renderAnalisis(){
-    const totales = calcularTotales();
+    const gastosFiltrados = obtenerGastosFiltrados();
+    const totales = calcularTotales(gastosFiltrados);
 
     document.getElementById("total-ingresos").textContent = `${totales.totalIngresos.toFixed(2)} €`;
     document.getElementById("total-gastos").textContent = `${totales.totalGastos.toFixed(2)} €`;
     const signoBalance = totales.balance >= 0 ? "+" : "-";
     document.getElementById("balance").textContent = `${signoBalance}${Math.abs(totales.balance).toFixed(2)}€`;
 
-    const totalesPorCategoria = calcularGastosPorCategoria();
-    const cuerpoTabla = document.getElementById("tabla-categorias-cuerpo");
-    cuerpoTabla.innerHTML="";
+    const totalesPorCategoria = calcularGastosPorCategoria(gastosFiltrados);
+    const contenedorCategorias = document.getElementById("detalle-categorias-lista");
+    contenedorCategorias.innerHTML = "";
 
     for(const [categoria, total] of Object.entries(totalesPorCategoria)){
-        const fila = document.createElement("tr");
+        const detalle = document.createElement("details");
+        detalle.className = "categoria-acordeon";
 
-        const celdaCategoria = document.createElement("td");
-        celdaCategoria.textContent = categoria;
+        const resumen = document.createElement("summary");
+        resumen.className = "categoria-acordeon-resumen";
 
-        const celdaTotal = document.createElement("td");
-        celdaTotal.textContent=`${total.toFixed(2)}€`;
+        const nombreCategoria = document.createElement("span");
+        nombreCategoria.className = "categoria-acordeon-nombre";
+        nombreCategoria.textContent = categoria;
 
-        fila.appendChild(celdaCategoria);
-        fila.appendChild(celdaTotal);
-        cuerpoTabla.appendChild(fila);
+        const totalCategoria = document.createElement("span");
+        totalCategoria.className = "categoria-acordeon-total";
+        totalCategoria.textContent = `${total.toFixed(2)}€`;
+
+        resumen.appendChild(nombreCategoria);
+        resumen.appendChild(totalCategoria);
+        detalle.appendChild(resumen);
+
+        const listaGastosCategoria = document.createElement("ul");
+        listaGastosCategoria.className = "categoria-acordeon-gastos";
+
+        const gastosCategoria = gastosFiltrados.filter((gasto) => gasto.tipo === "gasto" && gasto.categoria === categoria);
+        for(const gasto of gastosCategoria){
+            const item = document.createElement("li");
+
+            const descripcion = document.createElement("span");
+            descripcion.textContent = `${formatearFecha(gasto.fecha)} — ${gasto.nombre}`;
+
+            const cantidad = document.createElement("span");
+            cantidad.className = "detalle-categoria-cantidad";
+            cantidad.textContent = `${gasto.cantidad.toFixed(2)}€`;
+
+            item.appendChild(descripcion);
+            item.appendChild(cantidad);
+            listaGastosCategoria.appendChild(item);
+        }
+
+        detalle.appendChild(listaGastosCategoria);
+        contenedorCategorias.appendChild(detalle);
     }
 
     const maxCategoria = categoriaConMasGasto(totalesPorCategoria);
     const textoDestacado = document.getElementById("categoria-destacada");
     textoDestacado.textContent = maxCategoria ? `Mas gasto en: ${maxCategoria[0]} (${maxCategoria[1].toFixed(2)}€)` : "Todavia no hay gastos.";
+
+    actualizarGraficos(gastosFiltrados);
 }
 
 
@@ -347,7 +528,7 @@ function formatearFecha(fechaISO){
 
 form.addEventListener("submit", function (evento){
     evento.preventDefault();
-    
+
     const textoCantidad = inputCantidad.value.trim().replace(",", ".");
     const cantidad = Number(textoCantidad);
     const nombre = inputNombreGasto.value.trim();
@@ -372,7 +553,7 @@ form.addEventListener("submit", function (evento){
         return;
     }
 
-    
+
     mensajeError.textContent = "";
 
     if(idEnEdicion !== null){
@@ -381,13 +562,13 @@ form.addEventListener("submit", function (evento){
         gasto.cantidad = cantidad;
         gasto.categoria = categoria;
         gasto.tipo = tipo;
-        gasto.fecha = fecha; 
+        gasto.fecha = fecha;
 
         idEnEdicion = null;
         form.querySelector(".btn-primario").textContent = "Añadir gasto";
         btnCancelarEdicion.hidden = true;
     } else {
-        
+
         const nuevoGasto = {
             id: generarId(),
             nombre: nombre,
@@ -428,6 +609,17 @@ formCategoria.addEventListener("submit", function (evento){
     formCategoria.reset();
 });
 
+inputFechaDesde.addEventListener("input", renderAnalisis);
+inputFechaHasta.addEventListener("input", renderAnalisis);
+inputBuscadorAnalisis.addEventListener("input", renderAnalisis);
+
+btnLimpiarFiltros.addEventListener("click", function () {
+    inputFechaDesde.value = "";
+    inputFechaHasta.value = "";
+    inputBuscadorAnalisis.value = "";
+    renderAnalisis();
+});
+
 inputFecha.value = obtenerFechaHoyISO();
 
 renderGastos();
@@ -436,6 +628,8 @@ renderAnalisis();
 
 const botonesTab = document.querySelectorAll(".tab-btn");
 const panelesTab = document.querySelectorAll(".tab-panel");
+const botonesSubtab = document.querySelectorAll(".subtab-btn");
+const panelesSubtab = document.querySelectorAll(".subtab-panel");
 
 botonesTab.forEach(function (boton) {
     boton.addEventListener("click", function () {
@@ -446,6 +640,20 @@ botonesTab.forEach(function (boton) {
         });
 
         panelesTab.forEach(function (panel) {
+            panel.classList.toggle("activo", panel.id === destino);
+        });
+    });
+});
+
+botonesSubtab.forEach(function(boton){
+    boton.addEventListener("click", function () {
+        const destino = boton.dataset.subtab;
+
+        botonesSubtab.forEach(function (b) {
+            b.classList.toggle("activo", b === boton);
+        });
+
+        panelesSubtab.forEach(function (panel) {
             panel.classList.toggle("activo", panel.id === destino);
         });
     });

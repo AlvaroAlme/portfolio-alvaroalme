@@ -510,9 +510,13 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
-/* Editar / Borrar: texto en mono minúsculo, como una anotación
-   al margen del apunte — no botones con caja, para no competir
-   visualmente con la cifra ni con la etiqueta de categoría. */
+/* Editar / Borrar: iconos en vez de texto, para que la línea del
+   apunte no compita con más palabras que las que ya tiene (nombre,
+   categoría, cifra). El color sigue siendo discreto — gris suave
+   en reposo — y solo se marca (verde tinta / rojo débito) al pasar
+   el ratón, igual que antes con el texto. El SVG hereda el color
+   vía "currentColor", así que basta con cambiar "color" aquí para
+   que el dibujo cambie con él. */
 
 .gasto-acciones {
   grid-area: acciones;
@@ -520,24 +524,25 @@ h1 {
   align-self: center;
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.35rem;
 }
 
 .gasto-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  padding: 0.3rem 0.1rem;
-  font-family: var(--font-data);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  padding: 0.35rem;
+  border-radius: var(--radius-field);
   color: var(--ink-soft);
   cursor: pointer;
-  transition: color 150ms ease;
+  transition: color 150ms ease, background-color 150ms ease;
 }
 
 .gasto-btn:hover {
   color: var(--ink);
+  background: var(--ledger-void);
 }
 
 .gasto-btn-borrar:hover {
@@ -551,6 +556,63 @@ h1 {
 
 .gasto-cantidad--ingreso {
   color: var(--brand);
+}
+
+/* ---------- Sub-navegación de Análisis: "Gráficas" y "Buscar".
+   Mismo patrón visual que las pestañas principales (raya inferior,
+   texto mono en mayúsculas) pero más pequeño y con menos separación,
+   para que se lea como una navegación de segundo nivel, no como una
+   copia de la nav de arriba. Reutiliza la animación aparecer-panel
+   que ya usan las pestañas principales al cambiar de panel. ---------- */
+
+.subtabs {
+  display: flex;
+  gap: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 1.5rem;
+}
+
+.subtab-btn {
+  background: none;
+  border: none;
+  padding: 0 0 0.5rem;
+  margin-bottom: -1px;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.subtab-btn:hover {
+  color: var(--ink);
+}
+
+.subtab-btn.activo {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+
+.subtab-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.subtab-panel {
+  display: none;
+}
+
+.subtab-panel.activo {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .subtab-panel.activo {
+    animation: aparecer-panel 450ms ease-out;
+  }
 }
 
 /* ---------- Análisis: el resumen arriba, como el encabezado
@@ -621,42 +683,296 @@ h1 {
   margin-bottom: 1.5rem;
 }
 
-#analisis table {
-  width: 100%;
-  border-collapse: collapse;
+/* ---------- Filtros de análisis: mismo tratamiento que los campos
+   del formulario principal (línea inferior, sin caja) para que se
+   lean como parte del mismo libro y no como un panel de control
+   ajeno pegado encima. ---------- */
+
+.analisis-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-#analisis thead th {
+.filtro-fecha {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
   font-family: var(--font-data);
   font-size: 0.65rem;
-  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  flex: 1;
+  min-width: 7rem;
+}
+
+.filtro-fecha input {
+  border: none;
+  border-bottom: 1.5px solid var(--rule);
+  background: transparent;
+  padding: 0.35rem 0.1rem 0.5rem;
+  font-family: var(--font-data);
+  font-size: 0.85rem;
+  color: var(--ink);
+  transition: border-color 150ms ease;
+}
+
+.filtro-fecha input:focus {
+  outline: none;
+  border-bottom-color: var(--brand);
+}
+
+/* Mismo tinte verde del icono nativo de calendario que ya usas en
+   #fecha (ver el comentario junto a esa regla, más arriba). */
+
+.filtro-fecha input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(41%) sepia(36%) saturate(432%) hue-rotate(78deg) brightness(71%) contrast(90%);
+}
+
+.filtro-buscador {
+  flex: 2;
+  min-width: 10rem;
+  border: none;
+  border-bottom: 1.5px solid var(--rule);
+  background: transparent;
+  padding: 0.5rem 0.1rem 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink);
+  transition: border-color 150ms ease;
+}
+
+.filtro-buscador::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+.filtro-buscador:focus {
+  outline: none;
+  border-bottom-color: var(--brand);
+}
+
+.filtro-fecha input:focus-visible,
+.filtro-buscador:focus-visible,
+.btn-limpiar-filtros:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.btn-limpiar-filtros {
+  background: none;
+  border: none;
+  padding: 0.4rem 0.1rem 0.55rem;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 1.5px solid transparent;
+  transition: color 150ms ease;
+}
+
+.btn-limpiar-filtros:hover {
+  color: var(--debit);
+}
+
+/* ---------- Gráficos: cada uno en su propio bloque separado por
+   una regla fina, igual que el resto de "Análisis" — no una
+   tarjeta con sombra flotando encima, sino otra sección del mismo
+   libro. Chart.js necesita un contenedor con altura ya definida;
+   si no, el <canvas> crece sin límite en cada redibujado. ---------- */
+
+.analisis-graficos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.grafico-contenedor {
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+  height: 220px;
+  position: relative;
+}
+
+.grafico-titulo {
+  font-family: var(--font-data);
+  font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  text-align: left;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--rule);
+  margin-bottom: 0.75rem;
 }
 
-#analisis thead th:last-child {
-  text-align: right;
+/* ---------- Icono de ayuda: un signo de interrogación discreto,
+   del mismo tamaño que el texto que acompaña, que al recibir el
+   foco o el ratón despliega una explicación — pensado para no
+   añadir ruido visual permanente a la pantalla, solo aparece
+   cuando alguien lo pide. tabindex="0" lo hace accesible por
+   teclado (Tab + lectura), no solo con ratón. ---------- */
+
+.resumen-label-fila {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-#analisis tbody td {
-  padding: 0.7rem 0;
+.ayuda {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 1px solid var(--ink-soft);
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: help;
+  vertical-align: middle;
+}
+
+.grafico-titulo .ayuda {
+  margin-left: 0.4rem;
+}
+
+.ayuda-texto {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 14rem;
+  background: var(--ink);
+  color: var(--ledger-page);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.4;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-field);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+  z-index: 5;
+}
+
+.ayuda:hover .ayuda-texto,
+.ayuda:focus-visible .ayuda-texto {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ayuda:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ---------- Desglose por categoría: un acordeón nativo (<details>)
+   en vez de una tabla estática — cada categoría se despliega para
+   ver sus gastos concretos. El propio navegador se encarga de
+   abrir/cerrar (no hace falta JS para eso), así que solo hay que
+   vestirlo: quitamos el triángulo nativo del <summary> en los dos
+   motores que lo pintan distinto (::-webkit-details-marker para
+   Chrome/Safari, list-style para Firefox) y ponemos un indicador
+   propio — un "+" que gira 45° y se lee como un aspa al abrirse,
+   coherente con usar texto en vez de iconos en el resto de Finz. ---------- */
+
+.detalle-categorias-acordeon {
+  display: flex;
+  flex-direction: column;
+}
+
+.categoria-acordeon {
   border-top: 1px solid var(--rule);
-  font-size: 0.9rem;
 }
 
-#analisis tbody tr:last-child td {
+.categoria-acordeon:last-child {
   border-bottom: 1px solid var(--rule);
 }
 
-#analisis tbody td:last-child {
+.categoria-acordeon-resumen {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.categoria-acordeon-resumen::-webkit-details-marker {
+  display: none;
+}
+
+.categoria-acordeon-nombre {
+  flex: 1;
+  min-width: 0;
+}
+
+.categoria-acordeon-resumen::after {
+  content: "+";
+  font-family: var(--font-data);
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  transition: transform 150ms ease;
+}
+
+.categoria-acordeon[open] .categoria-acordeon-resumen::after {
+  transform: rotate(45deg);
+}
+
+.categoria-acordeon-resumen:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.categoria-acordeon-total {
   font-family: var(--font-data);
   font-weight: 600;
   color: var(--debit);
-  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.categoria-acordeon-gastos {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0 0.9rem 0;
+}
+
+.categoria-acordeon-gastos li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--rule);
+}
+
+.detalle-categoria-cantidad {
+  font-family: var(--font-data);
+  font-weight: 600;
+  color: var(--debit);
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
@@ -670,5 +986,61 @@ h1 {
 
   .app {
     padding: 1.75rem 1.25rem 1.25rem;
+  }
+
+  .analisis-filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ---------- Tablet: el ancho fijo de 400px pensado para móvil ya
+   no tiene sentido en una pantalla más grande — se nota como una
+   columna estrecha con mucho vacío a los lados. Dejamos que la
+   hoja crezca, pero sin pasarse: un libro de cuentas no se lee bien
+   con líneas de texto demasiado largas. ---------- */
+
+@media (min-width: 640px) {
+  .app {
+    max-width: 620px;
+  }
+}
+
+/* ---------- Escritorio: aquí es donde más se notaba el problema
+   ("tarjeta larga hacia abajo, centrada"). Con 400px de ancho fijo,
+   cualquier lista de movimientos un poco larga convertía la página
+   en una columna altísima en medio de toda la pantalla. La solución
+   no es solo ensanchar la hoja — es repartir el contenido que antes
+   se apilaba en vertical sin necesidad: el formulario pasa a dos
+   columnas (los 4 campos se emparejan, y el selector de tipo y los
+   botones ocupan las dos columnas de ancho) y los dos gráficos de
+   Análisis se colocan uno junto al otro en vez de uno debajo de
+   otro. El resultado ocupa más ancho y bastante menos alto. ---------- */
+
+@media (min-width: 1024px) {
+  .app {
+    max-width: 900px;
+    padding: 2.75rem 3rem 2.25rem;
+  }
+
+  .gasto-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.5rem;
+  }
+
+  .gasto-form .tipo-selector,
+  .gasto-form .btn-primario,
+  .gasto-form .btn-secundario {
+    grid-column: 1 / -1;
+  }
+
+  .analisis-graficos {
+    flex-direction: row;
+  }
+
+  .grafico-contenedor {
+    flex: 1;
+    min-width: 0;
   }
 }
